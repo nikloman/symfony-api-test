@@ -3,7 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Doctrine\Type\Geschlecht;
+use App\Doctrine\Type\GeschlechtType;
+use App\Model\Enum\Geschlecht;
 use App\Repository\TblKundenRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -33,8 +34,8 @@ class TblKunden
     #[ORM\Column(nullable: true)]
     private ?int $geloescht = null;
 
-    #[ORM\Column(length: 255, nullable: true, enumType: Geschlecht::class)]
-    private ?string $geschlecht = null;
+    #[ORM\Column(type: GeschlechtType::NAME,length: 255, nullable: true)]
+    private ?Geschlecht $geschlecht = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $email = null;
