@@ -27,7 +27,7 @@ class VermittlerUser
     #[ORM\JoinColumn(nullable: false)]
     private ?Vermittler $vermittlerId = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $aktiv = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]

@@ -3,12 +3,13 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use App\Doctrine\Type\Geschlecht;
 use App\Repository\TblKundenRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TblKundenRepository::class)]
-#[ORM\Table(name: 'std.tlb_kunden')]
+#[ORM\Table(name: 'std.tbl_kunden')]
 #[ApiResource]
 class TblKunden
 {
@@ -23,7 +24,7 @@ class TblKunden
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $vorname = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $firma = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
@@ -32,7 +33,7 @@ class TblKunden
     #[ORM\Column(nullable: true)]
     private ?int $geloescht = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255, nullable: true, enumType: Geschlecht::class)]
     private ?string $geschlecht = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -42,8 +43,8 @@ class TblKunden
     #[ORM\JoinColumn(nullable: false)]
     private ?Vermittler $vermittler = null;
 
-    #[ORM\OneToOne(mappedBy: 'kundenid', cascade: ['persist', 'remove'])]
-    private ?User $securityUser = null;
+//    #[ORM\OneToOne(mappedBy: 'kundenid', cascade: ['persist', 'remove'])]
+//    private ?User $securityUser = null;
 
     public function getId(): ?int
     {
@@ -145,26 +146,26 @@ class TblKunden
 
         return $this;
     }
-
-    public function getSecurityUser(): ?User
-    {
-        return $this->securityUser;
-    }
-
-    public function setSecurityUser(?User $securityUser): self
-    {
-        // unset the owning side of the relation if necessary
-        if ($securityUser === null && $this->securityUser !== null) {
-            $this->securityUser->setKundenid(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($securityUser !== null && $securityUser->getKundenid() !== $this) {
-            $securityUser->setKundenid($this);
-        }
-
-        $this->securityUser = $securityUser;
-
-        return $this;
-    }
+//
+//    public function getSecurityUser(): ?User
+//    {
+//        return $this->securityUser;
+//    }
+//
+//    public function setSecurityUser(?User $securityUser): self
+//    {
+//        // unset the owning side of the relation if necessary
+//        if ($securityUser === null && $this->securityUser !== null) {
+//            $this->securityUser->setKundenid(null);
+//        }
+//
+//        // set the owning side of the relation if necessary
+//        if ($securityUser !== null && $securityUser->getKundenid() !== $this) {
+//            $securityUser->setKundenid($this);
+//        }
+//
+//        $this->securityUser = $securityUser;
+//
+//        return $this;
+//    }
 }

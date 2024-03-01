@@ -12,25 +12,20 @@ use Doctrine\ORM\Mapping as ORM;
 class KundeAdresse
 {
 
-    #[ORM\Column(length: 36)]
+    #[ORM\Column(length: 36, nullable: false)]
     private ?string $kundeId = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: false)]
     private ?int $adresseId = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(nullable: true, options: ['default' => false])]
     private ?bool $geschaeftlich = null;
 
     #[ORM\Column(nullable: true)]
     private ?bool $rechnungsadresse = null;
 
-    #[ORM\Column]
-    private ?bool $gekoescht = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    #[ORM\Column(nullable: false, options: ['default' => false])]
+    private ?bool $geloescht = null;
 
     public function getKundeId(): ?string
     {
@@ -82,12 +77,12 @@ class KundeAdresse
 
     public function isGekoescht(): ?bool
     {
-        return $this->gekoescht;
+        return $this->geloescht;
     }
 
-    public function setGekoescht(bool $gekoescht): self
+    public function setGeloescht(bool $geloescht): self
     {
-        $this->gekoescht = $gekoescht;
+        $this->geloescht = $geloescht;
 
         return $this;
     }

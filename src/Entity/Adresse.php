@@ -13,11 +13,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Adresse
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    #[ORM\Column]
-    private ?int $id = null;
-
-    #[ORM\Column]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column()]
     private ?int $adresse_id = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -31,11 +28,6 @@ class Adresse
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Bundesland $bundesland = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getAdresseId(): ?int
     {

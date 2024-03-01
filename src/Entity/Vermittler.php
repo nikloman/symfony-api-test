@@ -12,11 +12,11 @@ use Doctrine\ORM\Mapping as ORM;
 class Vermittler
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue('IDENTITY')]
-    #[ORM\Column]
+    #[ORM\GeneratedValue('AUTO')]
+    #[ORM\Column(nullable: false)]
     private ?int $id = null;
 
-    #[ORM\Column(length: 36)]
+    #[ORM\Column(length: 36, nullable: false)]
     private ?string $nummer = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -28,8 +28,8 @@ class Vermittler
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $firma = null;
 
-    #[ORM\Column]
-    private ?bool $gel�oescht = null;
+    #[ORM\Column(nullable: false, options: ['default' => false])]
+    private ?bool $geloescht = null;
 
     #[ORM\OneToOne(mappedBy: 'vermittler', cascade: ['persist', 'remove'])]
     private ?TblKunden $tblKunden = null;
@@ -92,12 +92,12 @@ class Vermittler
 
     public function isGel�oescht(): ?bool
     {
-        return $this->gel�oescht;
+        return $this->geloescht;
     }
 
-    public function setGel�oescht(bool $gel�oescht): self
+    public function setGeloescht(bool $geloescht): self
     {
-        $this->gel�oescht = $gel�oescht;
+        $this->geloescht = $geloescht;
 
         return $this;
     }
