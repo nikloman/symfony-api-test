@@ -8,6 +8,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TblKundenRepository::class)]
+#[ORM\Table(name: 'std.tlb_kunden')]
 #[ApiResource]
 class TblKunden
 {

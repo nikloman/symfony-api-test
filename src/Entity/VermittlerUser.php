@@ -8,6 +8,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: VermittlerUserRepository::class)]
+#[ORM\Table(name: 'sec.vermittler_user')]
 #[ApiResource]
 class VermittlerUser
 {
