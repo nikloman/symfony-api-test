@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
-#[AsEventListener(event: KernelEvents::REQUEST, method: 'onKernelRequest')]
+#[AsEventListener(event: KernelEvents::REQUEST, method: 'onKernelRequest', priority: 4)]
 class CurrentVermittlerUserListener
 {
     private EntityManagerInterface $entityManager;

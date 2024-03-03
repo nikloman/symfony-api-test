@@ -10,9 +10,14 @@ use ApiPlatform\Metadata\Put;
 use App\Doctrine\Type\GeschlechtType;
 use App\Model\Enum\Geschlecht;
 use App\Repository\TblKundenRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Context;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[ORM\Entity(repositoryClass: TblKundenRepository::class)]
 #[ORM\Table(name: 'std.tbl_kunden')]
@@ -20,11 +25,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
     operations: [
         new GetCollection('/kunden', normalizationContext: ['groups' => 'kunden:read']),
         new Get('/kunden/{id}', normalizationContext: ['groups' => 'kunden:read']),
-        new Put('/kunden/{id}', normalizationContext: ['groups' => 'kunden:read', 'kunden:write']),
+        new Put('/kunden/{id}', normalizationContext: ['groups' => 'kunden:read']),
         new Delete('/kunden/{id}')
     ]
 )]
-class TblKunden implements VermittlerUserSpecificInterface, SoftDeletionFilterInterface
+class TblKunden implements VermittlerUserSpecificInterface, IntSoftDeletionFilterInterface
 {
     #[ORM\Id]
     #[ORM\Column(length: 36)]
@@ -37,29 +42,43 @@ class TblKunden implements VermittlerUserSpecificInterface, SoftDeletionFilterIn
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['kunden:read'])]
     private ?string $vorname = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $firma = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['kunden:read'])]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     private ?\DateTimeInterface $geburtsdatum = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $geloescht = null;
 
     #[ORM\Column(type: GeschlechtType::NAME, length: 255, nullable: true)]
+    #[Groups(['kunden:read'])]
     private ?Geschlecht $geschlecht = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['kunden:read'])]
     private ?string $email = null;
 
     #[ORM\OneToOne(inversedBy: 'tblKunden', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Vermittler $vermittler = null;
 
-//    #[ORM\OneToOne(mappedBy: 'kundenid', cascade: ['persist', 'remove'])]
-//    private ?User $securityUser = null;
+    #[ORM\OneToOne(mappedBy: 'kunde', targetEntity: User::class)]
+    #[Groups(['kunden:read'])]
+    private ?User $user = null;
+
+    #[ORM\OneToMany(mappedBy: 'kundeId', targetEntity: KundeAdresse::class)]
+    public Collection $kundeAdressen;
+
+    public function __construct()
+    {
+        $this->kundeAdressen = new ArrayCollection();
+    }
 
     public function getId(): ?string
     {
@@ -160,25 +179,28 @@ class TblKunden implements VermittlerUserSpecificInterface, SoftDeletionFilterIn
         return $this;
     }
 
-    public function getSecurityUser(): ?User
+    public function getUser(): ?User
     {
-        return $this->securityUser;
+        return $this->user;
     }
 
-    public function setSecurityUser(?User $securityUser): self
+    public function setUser(?User $user): void
     {
-        // unset the owning side of the relation if necessary
-        if ($securityUser === null && $this->securityUser !== null) {
-            $this->securityUser->setKundenid(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($securityUser !== null && $securityUser->getKundenid() !== $this) {
-            $securityUser->setKundenid($this);
-        }
-
-        $this->securityUser = $securityUser;
-
-        return $this;
+        $this->user = $user;
     }
+
+    #[Groups(['kunden:read'])]
+    #[SerializedName('adressen')]
+    public function getAdressen(): Collection
+    {
+        return $this->kundeAdressen->map(fn (KundeAdresse $a) => $a->getAdresse());
+    }
+
+    #[Groups(['kunden:read'])]
+    #[SerializedName('vermittlerId')]
+    public function getVermittlerId(): ?int
+    {
+        return $this->vermittler?->getId();
+    }
+
 }
