@@ -226,7 +226,7 @@ class Kunde implements VermittlerUserSpecificInterface, IntSoftDeletionFilterInt
         return $this->kundenAdressen;
     }
 
-    public function setkundenAdressen(Collection $kundenAdressen): void
+    public function setKundenAdressen(Collection $kundenAdressen): void
     {
         $this->kundenAdressen = $kundenAdressen;
     }

@@ -8,8 +8,10 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use App\Dto\AdresseDto;
+use App\Dto\AdressenInputDto;
+use App\Processor\AdressenProcessor;
 use App\Provider\AdressDetailsProvider;
 use App\Provider\AdressenProvider;
 use App\Provider\KundenAdressenProvider;
@@ -24,11 +26,13 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 #[ORM\Table(name: 'std.adresse')]
 #[ApiResource(
     operations: [
-        new GetCollection('/adressen', normalizationContext: ['groups' => 'adressen:read'], provider: AdressenProvider::class),
-        new Get('/adressen/{adresseId}', normalizationContext: ['groups' => 'adressen:read'], provider: AdressenProvider::class),
-        new Put('/adressen/{adresseId}', normalizationContext: ['groups' => 'adressen:read']),
+        new GetCollection('/adressen', provider: AdressenProvider::class),
+        new Post('/adressen', input: AdressenInputDto::class,processor: AdressenProcessor::class),
+        new Get('/adressen/{adresseId}', provider: AdressenProvider::class),
+        new Put('/adressen/{adresseId}'),
         new Delete('/adressen/{adresseId}')
-    ]
+    ],
+    normalizationContext: ['groups' => 'adressen:read'],
 )]
 #[ApiResource(
     uriTemplate: '/kunden/{id}/adressen',
@@ -52,14 +56,13 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 class Adresse
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'AUTO')]
-    #[ORM\Column(name: 'adresse_id')]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(name: 'adresse_id', type: Types::INTEGER)]
     #[ApiProperty(identifier: true)]
     #[Groups(['adressen:read', 'kunden:read'])]
     private ?int $adresseId = null;
 
     #[ORM\OneToOne(mappedBy: 'adresse', targetEntity: KundenAdresse::class, fetch: 'EAGER')]
-    #[ORM\JoinColumn(name: 'adresse_id', referencedColumnName: 'adresse_id', nullable: true)]
     private ?KundenAdresse $kundenAdresse = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -76,6 +79,7 @@ class Adresse
 
     #[ORM\OneToOne(cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'bundesland', referencedColumnName: 'kuerzel')]
+    #[Groups(['adressen:write'])]
     private ?Bundesland $bundesland = null;
 
     public function getAdresseId(): ?int
@@ -150,7 +154,7 @@ class Adresse
         return $this->kundenAdresse;
     }
 
-    public function setkundenAdresse(?KundenAdresse $kundenAdresse): void
+    public function setKundenAdresse(?KundenAdresse $kundenAdresse): void
     {
         $this->kundenAdresse = $kundenAdresse;
     }

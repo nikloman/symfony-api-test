@@ -36,7 +36,7 @@ class KundenAdresse implements BoolSoftDeletionFilterInterface
     private ?bool $rechnungsadresse = null;
 
     #[ORM\Column(nullable: false, options: ['default' => false])]
-    private ?bool $geloescht = null;
+    private ?bool $geloescht = false;
 
     public function getKunde(): ?Kunde
     {
