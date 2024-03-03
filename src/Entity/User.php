@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Post;
 use App\Processor\UserInputDtoProcessor;
 use App\Repository\UserRepository;
 use App\UserInputDto;
+use App\Validator\PasswordPolicy;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -24,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(uriTemplate: '/user'),
         new Get(uriTemplate: '/user/{id}'),
-        new Post(uriTemplate: '/user', input: UserInputDto::class, processor: UserInputDtoProcessor::class, normalizationContext: ['groups' => 'user:read'])
+        new Post(uriTemplate: '/user', normalizationContext: ['groups' => 'user:read'], validationContext: ['groups' => 'Default'], input: UserInputDto::class, processor: UserInputDtoProcessor::class)
     ]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -38,12 +39,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 200, nullable: true)]
     #[Groups(['kunden:read', 'user:read'])]
     #[SerializedName('username')]
+    #[Assert\Email]
     private ?string $email = null;
 
     #[ORM\Column(length: 60, nullable: true)]
-    #[Assert\Email()]
     #[Assert\Length(min: 8)]
-    #[Asser]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    #[PasswordPolicy]
     #[Ignore]
     private ?string $passwd = null;
 

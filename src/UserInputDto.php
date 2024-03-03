@@ -2,10 +2,18 @@
 
 namespace App;
 
+use App\Validator\PasswordPolicy;
+use Symfony\Component\Validator\Constraints as Assert;
+
 class UserInputDto
 {
+    #[Assert\Email]
     private string $username;
-    private string $password;
+
+    #[Assert\Length(min: 8)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    #[PasswordPolicy]private string $password;
 
     public function getUsername(): string
     {
