@@ -7,11 +7,14 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Doctrine\ShortenedUuidGenerator;
 use App\Doctrine\Type\GeschlechtType;
 use App\Entity\Interfaces\IntSoftDeletionFilterInterface;
 use App\Entity\Interfaces\VermittlerUserSpecificInterface;
 use App\Model\Enum\Geschlecht;
+use App\Processor\KundenProcessor;
 use App\Provider\AdressDetailsProvider;
 use App\Provider\KundenAdressenProvider;
 use App\Repository\KundenRepository;
@@ -31,32 +34,35 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
         new Get(uriTemplate: '/kunden/{id}'),
         new Put(uriTemplate: '/kunden/{id}'),
         new GetCollection(uriTemplate: '/kunden'),
+        new Post(uriTemplate: '/kunden', processor: KundenProcessor::class),
         new Delete(uriTemplate: '/kunden/{id}'),
     ],
     normalizationContext: ['groups' => 'kunden:read'],
-    denormalizationContext: ['groups' => 'kunden:read'],
+    denormalizationContext: ['groups' => ['kunden:write', 'kunden:read']],
 )]
 class Kunde implements VermittlerUserSpecificInterface, IntSoftDeletionFilterInterface
 {
     #[ORM\Id]
     #[ORM\Column(name: 'id', type: Types::STRING, length: 36)]
+    #[ORM\GeneratedValue('CUSTOM')]
+    #[ORM\CustomIdGenerator(class: ShortenedUuidGenerator::class)]
     #[Groups(['kunden:read'])]
     #[ApiProperty(identifier: true)]
     private ?string $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['kunden:read'])]
+    #[Groups(['kunden:read', 'kunden:write'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['kunden:read'])]
+    #[Groups(['kunden:read', 'kunden:write'])]
     private ?string $vorname = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $firma = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[Groups(['kunden:read'])]
+    #[Groups(['kunden:read', 'kunden:write'])]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     private ?\DateTimeInterface $geburtsdatum = null;
 
@@ -64,11 +70,11 @@ class Kunde implements VermittlerUserSpecificInterface, IntSoftDeletionFilterInt
     private ?int $geloescht = null;
 
     #[ORM\Column(type: GeschlechtType::NAME, length: 255, nullable: true)]
-    #[Groups(['kunden:read'])]
+    #[Groups(['kunden:read', 'kunden:write'])]
     private ?Geschlecht $geschlecht = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['kunden:read'])]
+    #[Groups(['kunden:read', 'kunden:write'])]
     private ?string $email = null;
 
     #[ORM\OneToOne(inversedBy: 'tblKunden', cascade: ['persist', 'remove'])]
@@ -76,7 +82,7 @@ class Kunde implements VermittlerUserSpecificInterface, IntSoftDeletionFilterInt
     private ?Vermittler $vermittler = null;
 
     #[ORM\OneToOne(mappedBy: 'kunde', targetEntity: User::class)]
-    #[Groups(['kunden:read'])]
+    #[Groups(['kunden:read', 'kunden:write'])]
     private ?User $user = null;
 
     #[ORM\OneToMany(mappedBy: 'kunde', targetEntity: KundenAdresse::class)]
