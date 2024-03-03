@@ -8,7 +8,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: VermittlerRepository::class)]
 #[ORM\Table(name: 'std.vermittler')]
-#[ApiResource]
 class Vermittler
 {
     #[ORM\Id]

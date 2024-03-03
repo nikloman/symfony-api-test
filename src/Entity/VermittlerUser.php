@@ -6,11 +6,12 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\VermittlerUserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: VermittlerUserRepository::class)]
 #[ORM\Table(name: 'sec.vermittler_user')]
-#[ApiResource]
-class VermittlerUser
+class VermittlerUser implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -23,8 +24,8 @@ class VermittlerUser
     #[ORM\Column(length: 60, nullable: true)]
     private ?string $passwd = null;
 
-    #[ORM\OneToOne(inversedBy: 'vermittlerUser', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\OneToOne( inversedBy: 'vermittlerUser', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'vermittler_id',nullable: false)]
     private ?Vermittler $vermittlerId = null;
 
     #[ORM\Column(nullable: true)]
@@ -96,5 +97,24 @@ class VermittlerUser
         $this->lastLogin = $lastLogin;
 
         return $this;
+    }
+
+    public function getRoles(): array
+    {
+        return ['VERMITTLER_USER_ROLE'];
+    }
+
+    public function eraseCredentials()
+    {
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->getEmail();
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->getPasswd();
     }
 }

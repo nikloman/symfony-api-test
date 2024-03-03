@@ -8,19 +8,26 @@ use Doctrine\DBAL\Types\Type;
 
 final class GeschlechtType extends Type
 {
-    public const SCHEMA = 'public';
     public const NAME = 'geschlecht';
 
-    public function getSQLDeclaration(array $column, AbstractPlatform $platform)
+    #[\Override]
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return sprintf('%s.%s', self::SCHEMA, self::NAME);
+        return sprintf(
+            'ENUM(%s)',
+            implode(', ', array_map(
+                fn($value) => "'{$value}'",
+                array_column(Geschlecht::cases(), 'value')))
+        );
     }
 
+    #[\Override]
     public function convertToPHPValue($value, AbstractPlatform $platform): ?Geschlecht
     {
         return Geschlecht::tryFrom($value);
     }
 
+    #[\Override]
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if (!($value instanceof Geschlecht)) {
@@ -29,10 +36,12 @@ final class GeschlechtType extends Type
         return $value->value;
     }
 
+    #[\Override]
     public function getName(): string {
         return self::NAME;
     }
 
+    #[\Override]
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;

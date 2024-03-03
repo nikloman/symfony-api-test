@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\BundeslandRepository;
 use Doctrine\DBAL\Types\Types;
@@ -9,11 +10,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BundeslandRepository::class)]
 #[ORM\Table(name: 'public.bundesland')]
-#[ApiResource]
 class Bundesland
 {
     #[ORM\Id]
-    #[ORM\Column(length: 2)]
+    #[ORM\Column(type: Types::STRING ,length: 2, options: ['fixed' => true])]
     private ?string $kuerzel = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: false)]
