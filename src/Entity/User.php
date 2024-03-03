@@ -28,22 +28,24 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(uriTemplate: '/user'),
         new Get(uriTemplate: '/user/{id}'),
-        new Delete(uriTemplate: '/user/{id}'),
         new Put(
             uriTemplate: '/user/{id}'),
         new Post(
             uriTemplate: '/user',
             input: UserInputDto::class,
             processor: UserInputDtoProcessor::class
-        )
+        ),
+        new Delete(uriTemplate: '/user/{id}'),
+
     ],
     normalizationContext: ['groups' => 'user:read'],
     validationContext: ['groups' => 'Default']
 )]
 #[ApiResource(
     uriTemplate: '/kunden/{id}/user',
+    operations: [new Get()],
     uriVariables: [
-        'id' => new Link(fromClass: Kunde::class, fromProperty: 'user')
+        'id' => new Link(fromProperty: 'user', fromClass: Kunde::class)
     ],
     normalizationContext: ['groups' => 'kunden:read']
 )]

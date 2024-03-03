@@ -30,21 +30,11 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
     operations: [
         new Get(uriTemplate: '/kunden/{id}'),
         new Put(uriTemplate: '/kunden/{id}'),
-        new Delete(uriTemplate: '/kunden/{id}'),
         new GetCollection(uriTemplate: '/kunden'),
+        new Delete(uriTemplate: '/kunden/{id}'),
     ],
     normalizationContext: ['groups' => 'kunden:read'],
     denormalizationContext: ['groups' => 'kunden:read'],
-)]
-#[ApiResource(
-    uriTemplate: '/kunden/{id}/adressen',
-    normalizationContext: ['groups' => 'kunden:read'],
-    provider: KundenAdressenProvider::class,
-)]
-#[ApiResource(
-    uriTemplate: '/kunden/{id}/adressen/{adresseId}/details',
-    normalizationContext: ['groups' => 'details:read'],
-    provider: AdressDetailsProvider::class
 )]
 class Kunde implements VermittlerUserSpecificInterface, IntSoftDeletionFilterInterface
 {

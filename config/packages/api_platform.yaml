@@ -3,8 +3,14 @@ api_platform:
         paths: ['%kernel.project_dir%/src/Entity']
     patch_formats:
         json: ['application/merge-patch+json']
+    formats:
+        json: ['application/json']
+        jsonld: ['application/ld+json']
+        html: ['text/html']
+    enable_docs: true
     swagger:
         versions: [3]
-#    formats:
-#        json: ['application/json']
-#        html: ['text/html']
+        api_keys:
+            jwt:
+                name: Authorization
+                type: header

@@ -7,9 +7,12 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Put;
 use App\Dto\AdresseDto;
+use App\Provider\AdressDetailsProvider;
 use App\Provider\AdressenProvider;
+use App\Provider\KundenAdressenProvider;
 use App\Repository\AdressenRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityNotFoundException;
@@ -26,6 +29,25 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
         new Put('/adressen/{adresseId}', normalizationContext: ['groups' => 'adressen:read']),
         new Delete('/adressen/{adresseId}')
     ]
+)]
+#[ApiResource(
+    uriTemplate: '/kunden/{id}/adressen',
+    operations: [new GetCollection()],
+    uriVariables: [
+        'id' => new Link(fromClass: Kunde::class)
+    ],
+    normalizationContext: ['groups' => 'kunden:read'],
+    provider: KundenAdressenProvider::class,
+)]
+#[ApiResource(
+    uriTemplate: '/kunden/{id}/adressen/{adresseId}/details',
+    operations: [new Get()],
+    uriVariables: [
+        'id' => new Link(fromClass: Kunde::class),
+        'adresseId' => new Link(fromClass: Adresse::class),
+    ],
+    normalizationContext: ['groups' => 'details:read'],
+    provider: AdressDetailsProvider::class
 )]
 class Adresse
 {
