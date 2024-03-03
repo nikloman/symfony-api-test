@@ -2,8 +2,7 @@
 
 namespace App\Doctrine;
 
-use App\Entity\VermittlerUser;
-use App\Entity\VermittlerUserSpecificInterface;
+use App\Entity\Interfaces\VermittlerUserSpecificInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 

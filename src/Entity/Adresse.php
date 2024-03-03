@@ -9,19 +9,20 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Put;
 use App\Dto\AdresseDto;
-use App\Provider\AdresseDtoProvider;
-use App\Repository\AdresseRepository;
+use App\Provider\AdressenProvider;
+use App\Repository\AdressenRepository;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 
-#[ORM\Entity(repositoryClass: AdresseRepository::class)]
+#[ORM\Entity(repositoryClass: AdressenRepository::class)]
 #[ORM\Table(name: 'std.adresse')]
 #[ApiResource(
     operations: [
-        new GetCollection('/adressen', normalizationContext: ['groups' => 'adressen:read'], provider: AdresseDtoProvider::class),
-        new Get('/adressen/{adresseId}', normalizationContext: ['groups' => 'adressen:read'], provider: AdresseDtoProvider::class),
+        new GetCollection('/adressen', normalizationContext: ['groups' => 'adressen:read'], provider: AdressenProvider::class),
+        new Get('/adressen/{adresseId}', normalizationContext: ['groups' => 'adressen:read'], provider: AdressenProvider::class),
         new Put('/adressen/{adresseId}', normalizationContext: ['groups' => 'adressen:read']),
         new Delete('/adressen/{adresseId}')
     ]
@@ -32,12 +33,12 @@ class Adresse
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column(name: 'adresse_id')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['adressen:read'])]
+    #[Groups(['adressen:read', 'kunden:read'])]
     private ?int $adresseId = null;
 
-    #[ORM\OneToOne(mappedBy: 'adresse', targetEntity: KundeAdresse::class, fetch: 'EAGER')]
+    #[ORM\OneToOne(mappedBy: 'adresse', targetEntity: KundenAdresse::class, fetch: 'EAGER')]
     #[ORM\JoinColumn(name: 'adresse_id', referencedColumnName: 'adresse_id', nullable: true)]
-    private ?KundeAdresse $kundeAdresse = null;
+    private ?KundenAdresse $kundenAdresse = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['adressen:read', 'kunden:read'])]
@@ -122,25 +123,25 @@ class Adresse
         return $this;
     }
 
-    public function getKundeAdresse(): ?KundeAdresse
+    public function getkundenAdresse(): ?KundenAdresse
     {
-        return $this->kundeAdresse;
+        return $this->kundenAdresse;
     }
 
-    public function setKundeAdresse(?KundeAdresse $kundeAdresse): void
+    public function setkundenAdresse(?KundenAdresse $kundenAdresse): void
     {
-        $this->kundeAdresse = $kundeAdresse;
+        $this->kundenAdresse = $kundenAdresse;
     }
 
-    #[Groups(['kunden:read'])]
+    #[Groups(['kunden:read', 'details:read'])]
     #[SerializedName('details')]
     public function getDetails(): array
     {
         try {
-            $kundenAddresse = $this->getKundeAdresse();
+            $kundenAddresse = $this->getkundenAdresse();
             return [
-                'geschaeftlich' => $this->getKundeAdresse()?->isGeschaeftlich(),
-                'rechnungsaddresse' => $this->getKundeAdresse()?->isRechnungsadresse()
+                'geschaeftlich' => $this->getkundenAdresse()?->isGeschaeftlich(),
+                'rechnungsaddresse' => $this->getkundenAdresse()?->isRechnungsadresse()
             ];
         } catch (EntityNotFoundException $e) {
             return [

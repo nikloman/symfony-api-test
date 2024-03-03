@@ -3,25 +3,28 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Repository\KundeAdresseRepository;
+use ApiPlatform\Metadata\NotExposed;
+use App\Entity\Interfaces\BoolSoftDeletionFilterInterface;
+use App\Repository\KundenAdressenRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Annotation\SerializedName;
 
-#[ORM\Entity(repositoryClass: KundeAdresseRepository::class)]
+#[ORM\Entity(repositoryClass: KundenAdressenRepository::class)]
 #[ORM\Table(name: 'std.kunde_adresse')]
-class KundeAdresse implements BoolSoftDeletionFilterInterface
+#[ApiResource]
+#[NotExposed]
+class KundenAdresse implements BoolSoftDeletionFilterInterface
 {
 
-    #[ManyToOne(targetEntity: TblKunden::class, inversedBy: 'kundeAdressen')]
+    #[ManyToOne(targetEntity: Kunde::class, inversedBy: 'kundenAdressen')]
     #[JoinColumn(name: 'kunde_id', referencedColumnName: 'id', nullable: true)]
-    private ?TblKunden $kundeId = null;
+    private ?Kunde $kunde = null;
 
 
     #[ORM\Id()]
-    #[ORM\OneToOne(inversedBy: 'kundeAdresse', targetEntity: Adresse::class)]
+    #[ORM\OneToOne(inversedBy: 'kundenAdresse', targetEntity: Adresse::class)]
     #[ORM\JoinColumn(name: 'adresse_id', referencedColumnName: 'adresse_id', nullable: true)]
     #[Groups(['kunden:read'])]
     private ?Adresse $adresse = null;
@@ -35,14 +38,14 @@ class KundeAdresse implements BoolSoftDeletionFilterInterface
     #[ORM\Column(nullable: false, options: ['default' => false])]
     private ?bool $geloescht = null;
 
-    public function getKundeId(): ?TblKunden
+    public function getKunde(): ?Kunde
     {
-        return $this->kundeId;
+        return $this->kunde;
     }
 
-    public function setKundeId(?TblKunden $kundeId): self
+    public function setKunde(?Kunde $kunde): self
     {
-        $this->kundeId = $kundeId;
+        $this->kunde = $kunde;
 
         return $this;
     }

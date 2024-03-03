@@ -2,14 +2,19 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Put;
 use App\Doctrine\Type\GeschlechtType;
+use App\Entity\Interfaces\IntSoftDeletionFilterInterface;
+use App\Entity\Interfaces\VermittlerUserSpecificInterface;
 use App\Model\Enum\Geschlecht;
-use App\Repository\TblKundenRepository;
+use App\Provider\AdressDetailsProvider;
+use App\Provider\KundenAdressenProvider;
+use App\Repository\KundenRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -19,22 +24,34 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
-#[ORM\Entity(repositoryClass: TblKundenRepository::class)]
+#[ORM\Entity(repositoryClass: KundenRepository::class)]
 #[ORM\Table(name: 'std.tbl_kunden')]
 #[ApiResource(
     operations: [
-        new GetCollection('/kunden', normalizationContext: ['groups' => 'kunden:read']),
-        new Get('/kunden/{id}', normalizationContext: ['groups' => 'kunden:read']),
-        new Put('/kunden/{id}', normalizationContext: ['groups' => 'kunden:read']),
-        new Delete('/kunden/{id}')
-    ]
+        new Get(uriTemplate: '/kunden/{id}'),
+        new Put(uriTemplate: '/kunden/{id}'),
+        new Delete(uriTemplate: '/kunden/{id}'),
+        new GetCollection(uriTemplate: '/kunden'),
+    ],
+    normalizationContext: ['groups' => 'kunden:read'],
+    denormalizationContext: ['groups' => 'kunden:read'],
 )]
-class TblKunden implements VermittlerUserSpecificInterface, IntSoftDeletionFilterInterface
+#[ApiResource(
+    uriTemplate: '/kunden/{id}/adressen',
+    normalizationContext: ['groups' => 'kunden:read'],
+    provider: KundenAdressenProvider::class,
+)]
+#[ApiResource(
+    uriTemplate: '/kunden/{id}/adressen/{adresseId}/details',
+    normalizationContext: ['groups' => 'details:read'],
+    provider: AdressDetailsProvider::class
+)]
+class Kunde implements VermittlerUserSpecificInterface, IntSoftDeletionFilterInterface
 {
     #[ORM\Id]
-    #[ORM\Column(length: 36)]
+    #[ORM\Column(name: 'id', type: Types::STRING, length: 36)]
     #[Groups(['kunden:read'])]
-    //id varchar (36) NOT NULL default (upper(left(gen_random_uuid()::text, 8))) PRIMARY KEY,
+    #[ApiProperty(identifier: true)]
     private ?string $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -72,17 +89,22 @@ class TblKunden implements VermittlerUserSpecificInterface, IntSoftDeletionFilte
     #[Groups(['kunden:read'])]
     private ?User $user = null;
 
-    #[ORM\OneToMany(mappedBy: 'kundeId', targetEntity: KundeAdresse::class)]
-    public Collection $kundeAdressen;
+    #[ORM\OneToMany(mappedBy: 'kunde', targetEntity: KundenAdresse::class)]
+    private Collection $kundenAdressen;
 
     public function __construct()
     {
-        $this->kundeAdressen = new ArrayCollection();
+        $this->kundenAdressen = new ArrayCollection();
     }
 
     public function getId(): ?string
     {
         return $this->id;
+    }
+
+    public function setId(?string $id): void
+    {
+        $this->id = $id;
     }
 
     public function getName(): ?string
@@ -191,9 +213,9 @@ class TblKunden implements VermittlerUserSpecificInterface, IntSoftDeletionFilte
 
     #[Groups(['kunden:read'])]
     #[SerializedName('adressen')]
-    public function getAdressen(): Collection
+    public function getAdressen(): array
     {
-        return $this->kundeAdressen->map(fn (KundeAdresse $a) => $a->getAdresse());
+        return $this->kundenAdressen->map(fn (KundenAdresse $a) => $a->getAdresse())->toArray();
     }
 
     #[Groups(['kunden:read'])]
@@ -201,6 +223,16 @@ class TblKunden implements VermittlerUserSpecificInterface, IntSoftDeletionFilte
     public function getVermittlerId(): ?int
     {
         return $this->vermittler?->getId();
+    }
+
+    public function getkundenAdressen(): Collection
+    {
+        return $this->kundenAdressen;
+    }
+
+    public function setkundenAdressen(Collection $kundenAdressen): void
+    {
+        $this->kundenAdressen = $kundenAdressen;
     }
 
 }

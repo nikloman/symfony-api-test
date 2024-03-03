@@ -2,26 +2,26 @@
 
 namespace App\Repository;
 
-use App\Entity\KundeAdresse;
+use App\Entity\KundenAdresse;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<KundeAdresse>
+ * @extends ServiceEntityRepository<KundenAdresse>
  *
- * @method KundeAdresse|null find($id, $lockMode = null, $lockVersion = null)
- * @method KundeAdresse|null findOneBy(array $criteria, array $orderBy = null)
- * @method KundeAdresse[]    findAll()
- * @method KundeAdresse[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method KundenAdresse|null find($id, $lockMode = null, $lockVersion = null)
+ * @method KundenAdresse|null findOneBy(array $criteria, array $orderBy = null)
+ * @method KundenAdresse[]    findAll()
+ * @method KundenAdresse[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class KundeAdresseRepository extends ServiceEntityRepository
+class KundenAdressenRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, KundeAdresse::class);
+        parent::__construct($registry, KundenAdresse::class);
     }
 
-    public function save(KundeAdresse $entity, bool $flush = false): void
+    public function save(KundenAdresse $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class KundeAdresseRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(KundeAdresse $entity, bool $flush = false): void
+    public function remove(KundenAdresse $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -40,7 +40,7 @@ class KundeAdresseRepository extends ServiceEntityRepository
     }
 
 //    /**
-//     * @return KundeAdresse[] Returns an array of KundeAdresse objects
+//     * @return kundenAdresse[] Returns an array of kundenAdresse objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -54,7 +54,7 @@ class KundeAdresseRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?KundeAdresse
+//    public function findOneBySomeField($value): ?kundenAdresse
 //    {
 //        return $this->createQueryBuilder('k')
 //            ->andWhere('k.exampleField = :val')

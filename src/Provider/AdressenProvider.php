@@ -9,37 +9,37 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProviderInterface;
 use App\Dto\AdresseDto;
-use App\Repository\AdresseRepository;
-use App\Repository\KundeAdresseRepository;
-use App\Repository\TblKundenRepository;
+use App\Repository\AdressenRepository;
+use App\Repository\KundenAdressenRepository;
+use App\Repository\KundenRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-class AdresseDtoProvider implements ProviderInterface
+class AdressenProvider implements ProviderInterface
 {
-    private TblKundenRepository $tblKundenRepository;
+    private KundenRepository $kundenRepository;
     private EntityManagerInterface $entityManager;
-    private AdresseRepository $adresseRepository;
+    private AdressenRepository $adressenRepository;
 
-    public function __construct(TblKundenRepository $tblKundenRepository, EntityManagerInterface $entityManager, AdresseRepository $adresseRepository)
+    public function __construct(KundenRepository $kundenRepository, EntityManagerInterface $entityManager, AdressenRepository $adressenRepository)
     {
-        $this->tblKundenRepository = $tblKundenRepository;
+        $this->kundenRepository = $kundenRepository;
         $this->entityManager = $entityManager;
-        $this->adresseRepository = $adresseRepository;
+        $this->adressenRepository = $adressenRepository;
     }
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
         if ($operation instanceof GetCollection) {
-            $kundenForVermittler = $this->tblKundenRepository->findAll();
+            $kundenForVermittler = $this->kundenRepository->findAll();
             $adressen = [];
             foreach ($kundenForVermittler as $kunde) {
-                $adressen[] = [...$kunde->getAdressen()->toArray()];
+                $adressen[] = [...$kunde->getAdressen()];
             }
             return $adressen;
         }
         if ($operation instanceof Get) {
             if (isset($uriVariables['adresseId'])) {
-                return $this->adresseRepository->find($uriVariables['adresseId']);
+                return $this->adressenRepository->find($uriVariables['adresseId']);
             }
         }
 

@@ -30,7 +30,7 @@ class CurrentVermittlerUserListener
         if ($user instanceof VermittlerUser) {
             $this->entityManager->getFilters()
                 ->enable(VermittlerUserFilter::VERMITTLER_USER_FILTER)
-                ->setParameter(VermittlerUserFilter::VERMITTLER_USER_FILTER, $user->getVermittlerId()->getId());
+                ->setParameter(VermittlerUserFilter::VERMITTLER_USER_FILTER, $user->getVermittler()->getId());
         }
 
     }

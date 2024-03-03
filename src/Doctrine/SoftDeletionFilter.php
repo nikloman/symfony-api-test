@@ -2,8 +2,8 @@
 
 namespace App\Doctrine;
 
-use App\Entity\BoolSoftDeletionFilterInterface;
-use App\Entity\IntSoftDeletionFilterInterface;
+use App\Entity\Interfaces\BoolSoftDeletionFilterInterface;
+use App\Entity\Interfaces\IntSoftDeletionFilterInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 

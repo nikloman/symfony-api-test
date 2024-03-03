@@ -26,7 +26,7 @@ class VermittlerUser implements UserInterface, PasswordAuthenticatedUserInterfac
 
     #[ORM\OneToOne( inversedBy: 'vermittlerUser', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'vermittler_id',nullable: false)]
-    private ?Vermittler $vermittlerId = null;
+    private ?Vermittler $vermittler = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $aktiv = null;
@@ -63,14 +63,14 @@ class VermittlerUser implements UserInterface, PasswordAuthenticatedUserInterfac
         return $this;
     }
 
-    public function getVermittlerId(): ?Vermittler
+    public function getVermittler(): ?Vermittler
     {
-        return $this->vermittlerId;
+        return $this->vermittler;
     }
 
-    public function setVermittlerId(Vermittler $vermittlerId): self
+    public function setVermittler(Vermittler $vermittler): self
     {
-        $this->vermittlerId = $vermittlerId;
+        $this->vermittler = $vermittler;
 
         return $this;
     }

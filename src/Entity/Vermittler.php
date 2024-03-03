@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\VermittlerRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -13,6 +14,7 @@ class Vermittler
     #[ORM\Id]
     #[ORM\GeneratedValue('AUTO')]
     #[ORM\Column(nullable: false)]
+    #[ApiProperty(identifier: true)]
     private ?int $id = null;
 
     #[ORM\Column(length: 36, nullable: false)]
@@ -31,9 +33,9 @@ class Vermittler
     private ?bool $geloescht = null;
 
     #[ORM\OneToOne(mappedBy: 'vermittler', cascade: ['persist', 'remove'])]
-    private ?TblKunden $tblKunden = null;
+    private ?Kunde $tblKunden = null;
 
-    #[ORM\OneToOne(mappedBy: 'vermittlerId', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'vermittler', cascade: ['persist', 'remove'])]
     private ?VermittlerUser $vermittlerUser = null;
 
     public function getId(): ?int
@@ -101,12 +103,12 @@ class Vermittler
         return $this;
     }
 
-    public function getTblKunden(): ?TblKunden
+    public function getTblKunden(): ?Kunde
     {
         return $this->tblKunden;
     }
 
-    public function setTblKunden(TblKunden $tblKunden): self
+    public function setTblKunden(Kunde $tblKunden): self
     {
         // set the owning side of the relation if necessary
         if ($tblKunden->getVermittler() !== $this) {
@@ -126,8 +128,8 @@ class Vermittler
     public function setVermittlerUser(VermittlerUser $vermittlerUser): self
     {
         // set the owning side of the relation if necessary
-        if ($vermittlerUser->getVermittlerId() !== $this) {
-            $vermittlerUser->setVermittlerId($this);
+        if ($vermittlerUser->getVermittler() !== $this) {
+            $vermittlerUser->setVermittler($this);
         }
 
         $this->vermittlerUser = $vermittlerUser;

@@ -6,11 +6,12 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Dto\UserInputDto;
 use App\Processor\UserInputDtoProcessor;
 use App\Repository\UserRepository;
-use App\UserInputDto;
 use App\Validator\PasswordPolicy;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -28,9 +29,23 @@ use Symfony\Component\Validator\Constraints as Assert;
         new GetCollection(uriTemplate: '/user'),
         new Get(uriTemplate: '/user/{id}'),
         new Delete(uriTemplate: '/user/{id}'),
-        new Put(uriTemplate: '/user/{id}'),
-        new Post(uriTemplate: '/user', normalizationContext: ['groups' => 'user:read'], validationContext: ['groups' => 'Default'], input: UserInputDto::class, processor: UserInputDtoProcessor::class)
-    ]
+        new Put(
+            uriTemplate: '/user/{id}'),
+        new Post(
+            uriTemplate: '/user',
+            input: UserInputDto::class,
+            processor: UserInputDtoProcessor::class
+        )
+    ],
+    normalizationContext: ['groups' => 'user:read'],
+    validationContext: ['groups' => 'Default']
+)]
+#[ApiResource(
+    uriTemplate: '/kunden/{id}/user',
+    uriVariables: [
+        'id' => new Link(fromClass: Kunde::class, fromProperty: 'user')
+    ],
+    normalizationContext: ['groups' => 'kunden:read']
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -41,9 +56,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 200, nullable: true)]
-    #[Groups(['kunden:read', 'user:read'])]
     #[SerializedName('username')]
     #[Assert\Email]
+    #[Groups('kunden:read')]
     private ?string $email = null;
 
     #[ORM\Column(length: 60, nullable: true)]
@@ -63,9 +78,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['kunden:read'])]
     private ?\DateTimeInterface $lastLogin = null;
 
-    #[ORM\OneToOne(inversedBy: 'user', targetEntity: TblKunden::class)]
+    #[ORM\OneToOne(inversedBy: 'user', targetEntity: Kunde::class)]
     #[ORM\JoinColumn(name: 'kundenid', referencedColumnName: 'id', nullable: true)]
-    private ?TblKunden $kunde = null;
+    private ?Kunde $kunde = null;
 
 
     public function getId(): ?int
@@ -121,12 +136,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getKunde(): ?TblKunden
+    public function getKunde(): ?Kunde
     {
         return $this->kunde;
     }
 
-    public function setKunde(?TblKunden $kunde): void
+    public function setKunde(?Kunde $kunde): void
     {
         $this->kunde = $kunde;
     }

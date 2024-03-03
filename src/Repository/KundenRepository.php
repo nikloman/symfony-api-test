@@ -2,26 +2,26 @@
 
 namespace App\Repository;
 
-use App\Entity\TblKunden;
+use App\Entity\Kunde;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<TblKunden>
+ * @extends ServiceEntityRepository<Kunde>
  *
- * @method TblKunden|null find($id, $lockMode = null, $lockVersion = null)
- * @method TblKunden|null findOneBy(array $criteria, array $orderBy = null)
- * @method TblKunden[]    findAll()
- * @method TblKunden[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Kunde|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Kunde|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Kunde[]    findAll()
+ * @method Kunde[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class TblKundenRepository extends ServiceEntityRepository
+class KundenRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, TblKunden::class);
+        parent::__construct($registry, Kunde::class);
     }
 
-    public function save(TblKunden $entity, bool $flush = false): void
+    public function save(Kunde $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class TblKundenRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(TblKunden $entity, bool $flush = false): void
+    public function remove(Kunde $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
