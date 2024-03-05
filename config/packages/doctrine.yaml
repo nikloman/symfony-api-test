@@ -1,6 +1,8 @@
 doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
+        types:
+            geschlecht: App\Doctrine\Type\GeschlechtType
 
         # IMPORTANT: You MUST configure your server version,
         # either here or in the DATABASE_URL env var (see .env file)
@@ -17,6 +19,11 @@ doctrine:
                 prefix: 'App\Entity'
                 alias: App
                 type: attribute
+        filters:
+            vermittler_user_filter: App\Doctrine\VermittlerUserFilter
+            soft_deletion_filter:
+                class: App\Doctrine\SoftDeletionFilter
+                enabled: true
 
 when@test:
     doctrine:

@@ -1,23 +1,30 @@
 security:
-    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+    password_hashers:
+        App\Entity\VermittlerUser: 'auto'
+        App\Entity\User: 'auto'
     providers:
-        users_in_memory: { memory: null }
+        vermittler_user_provider:
+            id: App\Security\VermittlerUserProvider
+    role_hierarchy:
+        ROLE_CORE_ADMIN: VERMITTLER_USER_ROLE
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
-            lazy: true
-            provider: users_in_memory
-
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#firewalls-authentication
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
-
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
+        foo_jwt:
+            pattern: ^/foo/login
+            stateless: true
+            provider: vermittler_user_provider
+            json_login:
+                check_path: foo_jwt_login
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        foo_jwt_api:
+            pattern:   ^/foo
+            stateless: true
+            jwt:
+                provider: vermittler_user_provider
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+         - { path: ^/foo/docs, roles: PUBLIC_ACCESS }
+         - { path: ^/foo/login$, roles: PUBLIC_ACCESS }
+         - { path: ^/foo/*$, roles: VERMITTLER_USER_ROLE }
